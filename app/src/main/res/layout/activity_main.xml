@@ -33,14 +33,15 @@
                 android:layout_height="150dp"
                 android:layout_gravity="center"
                 android:layout_marginTop="16dp"
-                android:src="@drawable/cloudy_sunny" />
+                android:src="@drawable/cloudy_sunny"
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:includeFontPadding="false"
-                android:text="Mon June 17 | 10:00 AM"
+                android:text="@string/textDateTime"
                 android:textAlignment="center"
                 android:textColor="@color/textColor"
                 android:textSize="19sp" />
@@ -49,7 +50,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
-                android:text="25°C"
+                android:text="@string/textTemperature"
                 android:textAlignment="center"
                 android:textColor="@color/textColor"
                 android:textSize="63sp"
@@ -63,6 +64,42 @@
                 android:textAlignment="center"
                 android:textColor="@color/textColor"
                 android:textSize="16sp" />
+
+            <include layout="@layout/layout_weather_card" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_weight="1"
+                    android:includeFontPadding="false"
+                    android:text="@string/today"
+                    android:textColor="@color/textColor"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    tools:ignore="InefficientWeight" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="24dp"
+                    android:text="@string/next_7_days"
+                    android:textColor="@color/textColor"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp" />
         </LinearLayout>
     </ScrollView>
 
