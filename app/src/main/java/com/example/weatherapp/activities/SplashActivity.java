@@ -1,4 +1,4 @@
-package com.example.weatherapp;
+package com.example.weatherapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +10,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.example.weatherapp.R;
 
 import java.util.Timer;
 import java.util.TimerTask;

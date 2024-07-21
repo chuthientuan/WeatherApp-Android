@@ -5,4 +5,6 @@
     <string name="textTemperature">25°C</string>
     <string name="today">Today</string>
     <string name="next_7_days">Next 7 days</string>
+    <string name="_20">20°</string>
+    <string name="_10_00">10:00</string>
 </resources>
