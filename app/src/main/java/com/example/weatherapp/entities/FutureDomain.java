@@ -5,14 +5,14 @@ public class FutureDomain {
     private String picPath;
     private String status;
     private int highTemp;
-    private int loeTemp;
+    private int lowTemp;
 
-    public FutureDomain(String day, String picPath, String status, int highTemp, int loeTemp) {
+    public FutureDomain(String day, String picPath, String status, int highTemp, int lowTemp) {
         this.day = day;
         this.picPath = picPath;
         this.status = status;
         this.highTemp = highTemp;
-        this.loeTemp = loeTemp;
+        this.lowTemp = lowTemp;
     }
 
     public String getDay() {
@@ -47,11 +47,11 @@ public class FutureDomain {
         this.highTemp = highTemp;
     }
 
-    public int getLoeTemp() {
-        return loeTemp;
+    public int getLowTemp() {
+        return lowTemp;
     }
 
-    public void setLoeTemp(int loeTemp) {
-        this.loeTemp = loeTemp;
+    public void setLowTemp(int loeTemp) {
+        this.lowTemp = loeTemp;
     }
 }
