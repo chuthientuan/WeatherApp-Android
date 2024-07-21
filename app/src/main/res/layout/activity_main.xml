@@ -85,6 +85,7 @@
                     tools:ignore="InefficientWeight" />
 
                 <TextView
+                    android:id="@+id/textNext7Days"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="24dp"

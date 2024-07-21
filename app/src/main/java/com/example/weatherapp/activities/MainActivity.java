@@ -1,6 +1,8 @@
 package com.example.weatherapp.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
     private HourlyAdapter hourlyAdapter;
     private RecyclerView recyclerViewHourly;
 
+    private TextView textNext7Days;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
         recyclerViewHourly = findViewById(R.id.recyclerViewHourly);
+        textNext7Days = findViewById(R.id.textNext7Days);
         recyclerViewHourly.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         items = new ArrayList<>();
         items.add(new Hourly("9 pm", 28, "cloudy"));
@@ -41,5 +46,10 @@ public class MainActivity extends AppCompatActivity {
         items.add(new Hourly("1 am", 32, "storm"));
         hourlyAdapter = new HourlyAdapter(items);
         recyclerViewHourly.setAdapter(hourlyAdapter);
+
+        textNext7Days.setOnClickListener(v -> {
+            Intent intent = new Intent(this, FutureActivity.class);
+            startActivity(intent);
+        });
     }
 }
