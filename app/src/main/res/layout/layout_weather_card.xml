@@ -68,7 +68,7 @@
                 android:src="@drawable/wind" />
 
             <TextView
-                android:id="@+id/textPercentWind"
+                android:id="@+id/textWindSpeed"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
