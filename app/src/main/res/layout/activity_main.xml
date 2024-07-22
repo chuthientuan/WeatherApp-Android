@@ -19,6 +19,7 @@
             tools:ignore="UseCompoundDrawables">
 
             <TextView
+                android:id="@+id/textState"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="48dp"
@@ -29,6 +30,7 @@
                 android:textSize="20sp" />
 
             <ImageView
+                android:id="@+id/imgIconWeather"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_gravity="center"
@@ -37,6 +39,7 @@
                 tools:ignore="ContentDescription" />
 
             <TextView
+                android:id="@+id/textDateTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -47,6 +50,7 @@
                 android:textSize="19sp" />
 
             <TextView
+                android:id="@+id/textTemperature"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
