@@ -45,9 +45,6 @@ public class FutureActivity extends AppCompatActivity {
         items.add(new FutureDomain("Tue", "cloudy_sunny", "Cloudy Sunny", 23, 12));
         items.add(new FutureDomain("Wen", "sunny", "Sunny", 28, 11));
         items.add(new FutureDomain("Thu", "rainy", "Rainy", 23, 12));
-        items.add(new FutureDomain("Sat", "storm", "Stormy", 24, 12));
-        items.add(new FutureDomain("Sun", "cloudy", "Cloudy", 25, 16));
-        items.add(new FutureDomain("Mon", "windy", "Windy", 29, 15));
         futureAdapter = new FutureAdapter(items);
         recyclerViewFuture.setAdapter(futureAdapter);
     }
