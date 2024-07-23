@@ -47,6 +47,7 @@
                     android:includeFontPadding="false"
                     android:text="@string/to_day"
                     android:textAlignment="center"
+                    android:layout_marginBottom="10dp"
                     android:textColor="@color/white"
                     android:textSize="20sp" />
 
@@ -55,17 +56,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
-                    android:text="@string/_20"
+                    android:layout_marginBottom="10dp"
                     android:textAlignment="center"
                     android:textColor="@color/white"
-                    android:textSize="63sp" />
+                    android:textSize="45sp" />
 
                 <TextView
                     android:id="@+id/textWeatherToday"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
-                    android:text="Mostly Cloudy"
                     android:textAlignment="center"
                     android:textColor="@color/white"
                     android:textSize="20sp" />

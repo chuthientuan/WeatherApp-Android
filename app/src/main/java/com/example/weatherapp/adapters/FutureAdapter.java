@@ -38,9 +38,11 @@ public class FutureAdapter extends RecyclerView.Adapter<FutureAdapter.FutureView
         context = holder.itemView.getContext();
         holder.textDay.setText(item.getDay());
         holder.textStatus.setText(item.getStatus());
-        holder.textHigh.setText(item.getHighTemp()+ "°");
-        holder.textLow.setText(item.getLowTemp()+ "°");
+        holder.textHigh.setText(item.getHighTemp()+ "°C");
+        holder.textLow.setText(item.getLowTemp()+ "°C");
         holder.imgPicNext.setImageResource(context.getResources().getIdentifier(item.getPicPath(), "drawable", context.getPackageName()));
+        int iconResId = getCustomIcon(item.getPicPath());
+        holder.imgPicNext.setImageResource(iconResId);
     }
 
     @Override
@@ -60,4 +62,42 @@ public class FutureAdapter extends RecyclerView.Adapter<FutureAdapter.FutureView
             imgPicNext = itemView.findViewById(R.id.imgPicNext);
         }
     }
+
+    private int getCustomIcon(String icon) {
+        switch (icon) {
+            case "01d":
+                return R.drawable.cloudy_sunny;
+            case "01n":
+                return R.drawable.sunny;
+            case "02d":
+                return R.drawable.cloudy;
+            case "02n":
+                return R.drawable.cloudy;
+            case "03d":
+            case "03n":
+                return R.drawable.cloudy_sunny;
+            case "04d":
+            case "04n":
+                return R.drawable.cloudy;
+            case "09d":
+            case "09n":
+                return R.drawable.rainy;
+            case "10d":
+                return R.drawable.rainy;
+            case "10n":
+                return R.drawable.rainy;
+            case "11d":
+            case "11n":
+                return R.drawable.storm;
+            case "13d":
+            case "13n":
+                return R.drawable.snowy;
+            case "50d":
+            case "50n":
+                return R.drawable.windy;
+            default:
+                return R.drawable.wind; // Biểu tượng mặc định nếu không có giá trị ánh xạ
+        }
+    }
+
 }
