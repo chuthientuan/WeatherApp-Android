@@ -24,6 +24,8 @@ import com.android.volley.toolbox.Volley;
 import com.example.weatherapp.R;
 import com.example.weatherapp.adapters.FutureAdapter;
 import com.example.weatherapp.entities.FutureDomain;
+import com.example.weatherapp.update.UpdateUI;
+import com.example.weatherapp.url.URL;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,7 +43,7 @@ public class FutureActivity extends AppCompatActivity {
     private FutureAdapter futureAdapter;
     private RecyclerView recyclerViewFuture;
 
-    private ImageView imgBack;
+    private ImageView imgBack, imgIcon;
     private String nameCity = "";
 
     private TextView textTemperatureToday, textWeatherToday, textFeels, textWind, textHumidity;
@@ -61,6 +63,7 @@ public class FutureActivity extends AppCompatActivity {
         textFeels = findViewById(R.id.textFeels);
         textWind = findViewById(R.id.textWind);
         textHumidity = findViewById(R.id.textHumidity);
+        imgIcon = findViewById(R.id.imgIcon);
         recyclerViewFuture = findViewById(R.id.recyclerViewFuture);
         recyclerViewFuture.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         imgBack = findViewById(R.id.imgback);
@@ -77,20 +80,25 @@ public class FutureActivity extends AppCompatActivity {
         textFeels.setText(intent.getStringExtra("feelsLike"));
         textWind.setText(intent.getStringExtra("windSpeed"));
         textHumidity.setText(intent.getStringExtra("humidity"));
+        String iconImg = intent.getStringExtra("imgIconWeather");
+        if (iconImg != null) {
+            imgIcon.setImageResource(getResources().getIdentifier(String.valueOf(UpdateUI.getIconID(iconImg)), "drawable", getPackageName()));
+        }
         Log.d("result", "Du lieu truyen qua: " + city);
         if (city.equals("")) {
             nameCity = "Hanoi";
-            get7DaysData(nameCity);
+            get5DaysData(nameCity);
         } else {
             nameCity = city;
-            get7DaysData(nameCity);
+            get5DaysData(nameCity);
         }
     }
 
-    private void get7DaysData(String data) {
-        String url = "https://api.openweathermap.org/data/2.5/forecast?q=" + data + "&appid=e5afb6abedc33f32a139cf17a8921af6&units=metric";
+    private void get5DaysData(String city) {
+        URL url = new URL();
+        url.setLinkDaily(city);
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url.getLinkDaily(),
                 response -> {
                     try {
                         items.clear();

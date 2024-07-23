@@ -4,7 +4,7 @@
     <string name="textDateTime">Mon June 17 | 10:00 AM</string>
     <string name="textTemperature">25°C</string>
     <string name="today">Today</string>
-    <string name="next_7_days">Next 7 days</string>
+    <string name="next_5_days">Next 5 days</string>
     <string name="_20">20°</string>
     <string name="_10_00">10:00</string>
     <string name="to_day">To Day</string>

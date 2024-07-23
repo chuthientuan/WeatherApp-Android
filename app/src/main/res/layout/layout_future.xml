@@ -10,10 +10,10 @@
 
     <TextView
         android:id="@+id/textDay"
-        android:layout_width="wrap_content"
+        android:layout_width="35dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="Sat"
+        android:text="Wed"
         android:textColor="@color/textColor"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
