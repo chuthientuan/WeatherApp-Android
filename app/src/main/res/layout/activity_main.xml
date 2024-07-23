@@ -68,7 +68,6 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:layout_marginTop="10dp"
-                android:text="@string/mostly_cloudy"
                 android:textAlignment="center"
                 android:textColor="@color/textColor"
                 android:textSize="19sp" />
@@ -88,7 +87,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:includeFontPadding="false"
-                android:text="@string/textDateTime"
                 android:textAlignment="center"
                 android:textColor="@color/textColor"
                 android:textSize="19sp" />
@@ -98,7 +96,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
-                android:text="@string/textTemperature"
                 android:textAlignment="center"
                 android:textColor="@color/textColor"
                 android:textSize="63sp"
