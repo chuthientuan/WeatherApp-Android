@@ -77,6 +77,11 @@ public class MainActivity extends AppCompatActivity {
             String city = editTextSearch.getText().toString();
             Intent intent = new Intent(MainActivity.this, FutureActivity.class);
             intent.putExtra("name", city);
+            intent.putExtra("state", textState.getText().toString());
+            intent.putExtra("temperature", textTemperature.getText().toString());
+            intent.putExtra("feelsLike", textFeelsLike.getText().toString());
+            intent.putExtra("windSpeed", textWindSpeed.getText().toString());
+            intent.putExtra("humidity", textPercentHumidity.getText().toString());
             startActivity(intent);
         });
 
