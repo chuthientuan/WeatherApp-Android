@@ -78,7 +78,6 @@
                 android:layout_height="150dp"
                 android:layout_gravity="center"
                 android:layout_marginTop="16dp"
-                android:src="@drawable/cloudy_sunny"
                 tools:ignore="ContentDescription" />
 
             <TextView
@@ -121,11 +120,11 @@
                     tools:ignore="InefficientWeight" />
 
                 <TextView
-                    android:id="@+id/textNext7Days"
+                    android:id="@+id/textNext5Days"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="24dp"
-                    android:text="@string/next_7_days"
+                    android:text="@string/next_5_days"
                     android:textColor="@color/textColor"
                     android:textSize="16sp"
                     android:textStyle="bold" />

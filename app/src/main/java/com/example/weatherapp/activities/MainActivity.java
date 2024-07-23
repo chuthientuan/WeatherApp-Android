@@ -2,7 +2,6 @@ package com.example.weatherapp.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,14 +20,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.weatherapp.R;
 import com.example.weatherapp.adapters.HourlyAdapter;
 import com.example.weatherapp.entities.Hourly;
-import com.google.gson.JsonObject;
+import com.example.weatherapp.update.UpdateUI;
+import com.example.weatherapp.url.URL;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,12 +42,13 @@ public class MainActivity extends AppCompatActivity {
     private HourlyAdapter hourlyAdapter;
     private RecyclerView recyclerViewHourly;
 
-    private TextView textNext7Days, textNameCity, textDateTime, textState, textTemperature, textPercentHumidity, textWindSpeed, textFeelsLike;
-    private ImageView imgSearch;
+    private TextView textNext5Days, textNameCity, textDateTime, textState, textTemperature, textPercentHumidity, textWindSpeed, textFeelsLike;
+    private ImageView imgSearch, imgIconWeather;
     private EditText editTextSearch;
     private String nameCity = "";
+    private String name, dateTime, status, icon, Temp, humidity, FeelsLike, speed, country;
 
-    private long pressBackTime;;
+    private long pressBackTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
         recyclerViewHourly = findViewById(R.id.recyclerViewHourly);
-        textNext7Days = findViewById(R.id.textNext7Days);
+        textNext5Days = findViewById(R.id.textNext5Days);
         recyclerViewHourly.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         items = new ArrayList<>();
         items.add(new Hourly("9 pm", 28, "cloudy"));
@@ -73,16 +72,8 @@ public class MainActivity extends AppCompatActivity {
         hourlyAdapter = new HourlyAdapter(items);
         recyclerViewHourly.setAdapter(hourlyAdapter);
 
-        textNext7Days.setOnClickListener(v -> {
-            String city = editTextSearch.getText().toString();
-            Intent intent = new Intent(MainActivity.this, FutureActivity.class);
-            intent.putExtra("name", city);
-            intent.putExtra("state", textState.getText().toString());
-            intent.putExtra("temperature", textTemperature.getText().toString());
-            intent.putExtra("feelsLike", textFeelsLike.getText().toString());
-            intent.putExtra("windSpeed", textWindSpeed.getText().toString());
-            intent.putExtra("humidity", textPercentHumidity.getText().toString());
-            startActivity(intent);
+        textNext5Days.setOnClickListener(v -> {
+            setIntentExtras();
         });
 
         imgSearch = findViewById(R.id.imgSearch);
@@ -91,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         textState = findViewById(R.id.textState);
         textNameCity = findViewById(R.id.textNameCity);
         textTemperature = findViewById(R.id.textTemperature);
+        imgIconWeather = findViewById(R.id.imgIconWeather);
         textPercentHumidity = findViewById(R.id.textPercentHumidity);
         textWindSpeed = findViewById(R.id.textWindSpeed);
         textFeelsLike = findViewById(R.id.textFeelsLike);
@@ -100,13 +92,12 @@ public class MainActivity extends AppCompatActivity {
         getCurrentWeatherData("Hanoi");
         imgSearch.setOnClickListener(v -> {
             String city = editTextSearch.getText().toString();
-            if (city.equals("")){
+            if (city.equals("")) {
                 nameCity = "Hanoi";
                 getCurrentWeatherData(nameCity);
                 textNameCity.setText(nameCity);
                 textNameCity.setVisibility(View.VISIBLE);
-            }
-            else {
+            } else {
                 nameCity = city;
                 textNameCity.setText(nameCity);
                 textNameCity.setVisibility(View.VISIBLE);
@@ -114,58 +105,72 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    public void getCurrentWeatherData(String data) {
+
+    private void setIntentExtras() {
+        String city = editTextSearch.getText().toString();
+        Intent intent = new Intent(MainActivity.this, FutureActivity.class);
+        intent.putExtra("name", city);
+        intent.putExtra("state", textState.getText().toString());
+        intent.putExtra("temperature", textTemperature.getText().toString());
+        intent.putExtra("feelsLike", textFeelsLike.getText().toString());
+        intent.putExtra("windSpeed", textWindSpeed.getText().toString());
+        intent.putExtra("humidity", textPercentHumidity.getText().toString());
+        intent.putExtra("imgIconWeather", icon);
+        startActivity(intent);
+    }
+
+    private void getCurrentWeatherData(String city) {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url = "https://api.openweathermap.org/data/2.5/weather?q=" + data +"&units=metric&appid=e5afb6abedc33f32a139cf17a8921af6";
-        @SuppressLint("SetTextI18n") StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+        URL url = new URL();
+        url.setLinkDay(city);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url.getLinkDay(),
                 response -> {
                     try {
                         JSONObject jsonObject = new JSONObject(response);
                         String day = jsonObject.getString("dt");
-                        String name = jsonObject.getString("name");
-
                         long dt = Long.valueOf(day);
                         Date date = new Date(dt * 1000L);
-                        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE yyyy-MM-dd | HH:mm a", Locale.ENGLISH);
-                        String dateTime = simpleDateFormat.format(date);
-
-                        textDateTime.setText(dateTime);
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE yyyy-MM-dd | HH:mm a", Locale.ENGLISH);
+                        dateTime = simpleDateFormat.format(date);
 
                         JSONArray jsonArrayWeather = jsonObject.getJSONArray("weather");
                         JSONObject jsonObjectWeather = jsonArrayWeather.getJSONObject(0);
-                        String status = jsonObjectWeather.getString("main");
-                        String icon = jsonObjectWeather.getString("icon");
-                        textState.setText(status);
+                        status = jsonObjectWeather.getString("main");
+                        icon = jsonObjectWeather.getString("icon");
 
                         JSONObject jsonObjectMain = jsonObject.getJSONObject("main");
                         String temp = jsonObjectMain.getString("temp");
-                        String humidity = jsonObjectMain.getString("humidity");
+                        humidity = jsonObjectMain.getString("humidity");
                         String feelsLike = jsonObjectMain.getString("feels_like");
                         Double a = Double.valueOf(temp);
-                        String Temp = String.valueOf(a.intValue());
-                        textTemperature.setText(Temp + "°C");
-                        textPercentHumidity.setText(humidity + "%");
-                        textFeelsLike.setText(feelsLike + "°C");
+                        Temp = String.valueOf(a.intValue());
+                        FeelsLike = String.valueOf(Double.valueOf(feelsLike).intValue());
 
                         JSONObject jsonObjectWind = jsonObject.getJSONObject("wind");
-                        String speed = jsonObjectWind.getString("speed");
-                        textWindSpeed.setText(speed + "m/s");
+                        speed = jsonObjectWind.getString("speed");
 
                         JSONObject jsonObjectSys = jsonObject.getJSONObject("sys");
-                        String country = jsonObjectSys.getString("country");
-                        textNameCity.setText(name + "-" + country);
-
+                        country = jsonObjectSys.getString("country");
+                        name = jsonObject.getString("name");
+                        upDateUI();
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
                     }
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                });
+                error -> Log.e("result", "JSON parsing error: " + error.getMessage()));
         requestQueue.add(stringRequest);
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void upDateUI() {
+        textNameCity.setText(name + "-" + country);
+        textDateTime.setText(dateTime);
+        textState.setText(status);
+        textTemperature.setText(Temp + "°C");
+        textPercentHumidity.setText(humidity + "%");
+        textFeelsLike.setText(FeelsLike + "°C");
+        textWindSpeed.setText(speed + "m/s");
+        imgIconWeather.setImageResource(getResources().getIdentifier(String.valueOf(UpdateUI.getIconID(icon)), "drawable", getPackageName()));
     }
 
     @Override

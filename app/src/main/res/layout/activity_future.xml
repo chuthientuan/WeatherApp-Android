@@ -23,7 +23,7 @@
                 android:layout_height="26dp"
                 android:layout_margin="16dp"
                 android:contentDescription="@string/app_name"
-                android:src="@drawable/ic_back" />
+                android:src="@drawable/back" />
 
             <include layout="@layout/layout_weather_card_next" />
             <androidx.recyclerview.widget.RecyclerView

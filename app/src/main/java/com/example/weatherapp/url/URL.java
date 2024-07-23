@@ -3,23 +3,34 @@ package com.example.weatherapp.url;
 import com.example.weatherapp.location.LocationCord;
 
 public class URL {
-    private final String link;
-    private static String city_url;
+    private String linkDay;
+    private String linkHour;
+    private String linkDaily;
 
     public URL() {
-        link = "https://api.openweathermap.org/data/3.0/onecall?lat=" + LocationCord.lat +
-            "&lon=" + LocationCord.lon + "&appid=" + LocationCord.API_KEY;
     }
 
-    public String getLink() {
-        return link;
+    public void setLinkDay(String city) {
+        linkDay = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=metric&appid=" + LocationCord.API_KEY;
     }
 
-    public static void setCity_url(String city) {
-        city_url = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + LocationCord.API_KEY;
+    public String getLinkDay() {
+        return linkDay;
     }
 
-    public static String getCity_url(){
-        return city_url;
+    public void setLinkHour(String city) {
+
+    }
+
+    public String getLinkHour() {
+        return linkHour;
+    }
+
+    public void setLinkDaily(String city) {
+        linkDaily = "https://api.openweathermap.org/data/2.5/forecast?q=" + city + "&appid=" + LocationCord.API_KEY + "&units=metric";
+    }
+
+    public String getLinkDaily() {
+        return linkDaily;
     }
 }
