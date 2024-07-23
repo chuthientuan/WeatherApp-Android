@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -43,9 +44,12 @@ public class MainActivity extends AppCompatActivity {
     private HourlyAdapter hourlyAdapter;
     private RecyclerView recyclerViewHourly;
 
-    private TextView textNext7Days, textNameCity, textDateTime, textState, textTemperature, textPercentHumidity, textWindSpeed, textPercentRain;
+    private TextView textNext7Days, textNameCity, textDateTime, textState, textTemperature, textPercentHumidity, textWindSpeed, textFeelsLike;
     private ImageView imgSearch;
     private EditText editTextSearch;
+    private String nameCity = "";
+
+    private long pressBackTime;;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +74,9 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewHourly.setAdapter(hourlyAdapter);
 
         textNext7Days.setOnClickListener(v -> {
-            Intent intent = new Intent(this, FutureActivity.class);
+            String city = editTextSearch.getText().toString();
+            Intent intent = new Intent(MainActivity.this, FutureActivity.class);
+            intent.putExtra("name", city);
             startActivity(intent);
         });
 
@@ -82,13 +88,25 @@ public class MainActivity extends AppCompatActivity {
         textTemperature = findViewById(R.id.textTemperature);
         textPercentHumidity = findViewById(R.id.textPercentHumidity);
         textWindSpeed = findViewById(R.id.textWindSpeed);
-        textPercentRain = findViewById(R.id.textPercentRain);
+        textFeelsLike = findViewById(R.id.textFeelsLike);
 
+        textNameCity.setText("Hanoi");
+        textNameCity.setVisibility(View.VISIBLE);
+        getCurrentWeatherData("Hanoi");
         imgSearch.setOnClickListener(v -> {
             String city = editTextSearch.getText().toString();
-            textNameCity.setText(city);
-            textNameCity.setVisibility(View.VISIBLE);
-            getCurrentWeatherData(city);
+            if (city.equals("")){
+                nameCity = "Hanoi";
+                getCurrentWeatherData(nameCity);
+                textNameCity.setText(nameCity);
+                textNameCity.setVisibility(View.VISIBLE);
+            }
+            else {
+                nameCity = city;
+                textNameCity.setText(nameCity);
+                textNameCity.setVisibility(View.VISIBLE);
+                getCurrentWeatherData(nameCity);
+            }
         });
     }
     public void getCurrentWeatherData(String data) {
@@ -117,14 +135,12 @@ public class MainActivity extends AppCompatActivity {
                         JSONObject jsonObjectMain = jsonObject.getJSONObject("main");
                         String temp = jsonObjectMain.getString("temp");
                         String humidity = jsonObjectMain.getString("humidity");
+                        String feelsLike = jsonObjectMain.getString("feels_like");
                         Double a = Double.valueOf(temp);
                         String Temp = String.valueOf(a.intValue());
                         textTemperature.setText(Temp + "°C");
                         textPercentHumidity.setText(humidity + "%");
-
-                        JSONObject jsonObjectRain = jsonObject.getJSONObject("rain");
-                        String rain = jsonObjectRain.getString("1h");
-                        textPercentRain.setText(rain + "%");
+                        textFeelsLike.setText(feelsLike + "°C");
 
                         JSONObject jsonObjectWind = jsonObject.getJSONObject("wind");
                         String speed = jsonObjectWind.getString("speed");
@@ -145,5 +161,16 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
         requestQueue.add(stringRequest);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (System.currentTimeMillis() - pressBackTime < 2000) {
+            super.onBackPressed();
+            return;
+        } else {
+            Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show();
+        }
+        pressBackTime = System.currentTimeMillis();
     }
 }

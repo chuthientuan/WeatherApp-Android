@@ -31,14 +31,13 @@
                 android:layout_height="34dp"
                 android:contentDescription="@string/app_name"
                 android:layout_gravity="center"
-                android:src="@drawable/rain" />
+                android:src="@drawable/cloudy_sunny" />
 
             <TextView
-                android:id="@+id/textPercentRain"
+                android:id="@+id/textFeelsLike"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
-                android:text="22%"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textStyle="bold" />
@@ -47,7 +46,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
-                android:text="Rain"
+                android:text="Feels like"
                 android:textAlignment="center"
                 android:textColor="@color/white" />
 
@@ -72,7 +71,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
-                android:text="25%"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textStyle="bold" />
@@ -106,7 +104,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
-                android:text="18%"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textStyle="bold" />
