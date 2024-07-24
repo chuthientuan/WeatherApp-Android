@@ -8,11 +8,11 @@ public class UpdateUI {
             case "01d":
                 return R.drawable.sunny;
             case "01n":
-                return R.drawable.cloudy_sunny;
+                return R.drawable.clear_night;
             case "02d":
-                return R.drawable.cloudy;
+                return R.drawable.cloudy_sunny;
             case "02n":
-                return R.drawable.cloudy;
+                return R.drawable.clear_night;
             case "03d":
             case "03n":
                 return R.drawable.cloudy;
