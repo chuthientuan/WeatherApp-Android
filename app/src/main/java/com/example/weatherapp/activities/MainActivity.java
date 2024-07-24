@@ -41,15 +41,11 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
     private ArrayList<Hourly> items;
     private HourlyAdapter hourlyAdapter;
+    private RecyclerView recyclerViewHourly;
 
-    private TextView textNameCity;
-    private TextView textDateTime;
-    private TextView textState;
-    private TextView textTemperature;
-    private TextView textPercentHumidity;
-    private TextView textWindSpeed;
-    private TextView textFeelsLike;
-    private ImageView imgIconWeather;
+    private TextView textNameCity, textNext5Days, textDateTime, textState, textTemperature;
+    private TextView textPercentHumidity, textWindSpeed, textFeelsLike;
+    private ImageView imgIconWeather, imgSearch;
     private EditText editTextSearch;
     private String nameCity = "";
     private String name, dateTime, status, icon, Temp, humidity, FeelsLike, speed, country;
@@ -69,16 +65,34 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        RecyclerView recyclerViewHourly = findViewById(R.id.recyclerViewHourly);
-        TextView textNext5Days = findViewById(R.id.textNext5Days);
+        setMapping();
         recyclerViewHourly.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         items = new ArrayList<>();
         hourlyAdapter = new HourlyAdapter(items);
         recyclerViewHourly.setAdapter(hourlyAdapter);
 
         textNext5Days.setOnClickListener(v -> setIntentExtras());
+        textNameCity.setText("Hanoi");
+        textNameCity.setVisibility(View.VISIBLE);
+        getCurrentWeatherData("Hanoi");
+        getHourlyData("Hanoi");
+        imgSearch.setOnClickListener(v -> {
+            String city = editTextSearch.getText().toString();
+            if (city.isEmpty()) {
+                Toast.makeText(this, "Please enter city", Toast.LENGTH_SHORT).show();
+            } else {
+                nameCity = city;
+                textNameCity.setText(nameCity);
+                textNameCity.setVisibility(View.VISIBLE);
+                getCurrentWeatherData(nameCity);
+                getHourlyData(nameCity);
+            }
+        });
+    }
 
-        ImageView imgSearch = findViewById(R.id.imgSearch);
+    private void setMapping() {
+        recyclerViewHourly = findViewById(R.id.recyclerViewHourly);
+        textNext5Days = findViewById(R.id.textNext5Days);
         textDateTime = findViewById(R.id.textDateTime);
         editTextSearch = findViewById(R.id.editTextSearch);
         textState = findViewById(R.id.textState);
@@ -88,24 +102,7 @@ public class MainActivity extends AppCompatActivity {
         textPercentHumidity = findViewById(R.id.textPercentHumidity);
         textWindSpeed = findViewById(R.id.textWindSpeed);
         textFeelsLike = findViewById(R.id.textFeelsLike);
-
-        textNameCity.setText("Hanoi");
-        textNameCity.setVisibility(View.VISIBLE);
-        getCurrentWeatherData("Hanoi");
-        getHourlyData("Hanoi");
-        imgSearch.setOnClickListener(v -> {
-            String city = editTextSearch.getText().toString();
-            if (city.isEmpty()) {
-                Toast.makeText(this, "Please enter city", Toast.LENGTH_SHORT).show();
-            }
-            else {
-                nameCity = city;
-                textNameCity.setText(nameCity);
-                textNameCity.setVisibility(View.VISIBLE);
-                getCurrentWeatherData(nameCity);
-                getHourlyData(nameCity);
-            }
-        });
+        imgSearch = findViewById(R.id.imgSearch);
     }
 
     private void setIntentExtras() {
@@ -167,8 +164,8 @@ public class MainActivity extends AppCompatActivity {
     private void getHourlyData(String city) {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         URL url = new URL();
-        url.setLinkHour(city);
-        @SuppressLint("NotifyDataSetChanged") StringRequest stringRequest = new StringRequest(Request.Method.GET, url.getLinkHour(),
+        url.setLink(city);
+        @SuppressLint("NotifyDataSetChanged") StringRequest stringRequest = new StringRequest(Request.Method.GET, url.getLink(),
                 response -> {
                     try {
                         JSONObject jsonObject = new JSONObject(response);

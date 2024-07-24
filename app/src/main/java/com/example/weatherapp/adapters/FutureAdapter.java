@@ -32,7 +32,7 @@ public class FutureAdapter extends RecyclerView.Adapter<FutureAdapter.FutureView
         return new FutureViewHolder(view);
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n", "DiscouragedApi"})
     @Override
     public void onBindViewHolder(@NonNull FutureViewHolder holder, int position) {
         FutureDomain item = items.get(position);
@@ -51,8 +51,11 @@ public class FutureAdapter extends RecyclerView.Adapter<FutureAdapter.FutureView
     }
 
     static class FutureViewHolder extends RecyclerView.ViewHolder {
-        private TextView textDay, textStatus, textHigh, textLow;
-        private ImageView imgPicNext;
+        private final TextView textDay;
+        private final TextView textStatus;
+        private final TextView textHigh;
+        private final TextView textLow;
+        private final ImageView imgPicNext;
 
         public FutureViewHolder(@NonNull View itemView) {
             super(itemView);

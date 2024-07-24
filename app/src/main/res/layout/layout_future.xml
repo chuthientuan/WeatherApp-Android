@@ -1,45 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="16dp"
-    android:layout_marginBottom="8dp"
     android:layout_marginEnd="16dp"
-    android:background="@drawable/background_hourly"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_marginBottom="8dp"
+    android:background="@drawable/background_hourly">
 
     <TextView
         android:id="@+id/textDay"
         android:layout_width="35dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="Wed"
+        android:text="@string/wed"
         android:textColor="@color/textColor"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ImageView
         android:id="@+id/imgPicNext"
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_marginStart="32dp"
+        android:contentDescription="@string/app_name"
         android:src="@drawable/sunny"
         app:layout_constraintBottom_toBottomOf="@+id/textDay"
         app:layout_constraintStart_toEndOf="@+id/textDay"
-        app:layout_constraintTop_toTopOf="@+id/textDay"
-        android:contentDescription="@string/app_name"/>
+        app:layout_constraintTop_toTopOf="@+id/textDay" />
+
     <TextView
         android:id="@+id/textStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="sunny"
+        android:text="@string/sunny"
         android:textColor="@color/textColor"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="@id/imgPicNext"
         app:layout_constraintStart_toEndOf="@id/imgPicNext"
-        app:layout_constraintTop_toTopOf="@id/imgPicNext"/>
+        app:layout_constraintTop_toTopOf="@id/imgPicNext" />
+
     <TextView
         android:id="@+id/textLow"
         android:layout_width="wrap_content"
@@ -49,7 +52,8 @@
         android:textColor="@color/textColor"
         app:layout_constraintBottom_toBottomOf="@id/imgPicNext"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/imgPicNext"/>
+        app:layout_constraintTop_toTopOf="@id/imgPicNext" />
+
     <TextView
         android:id="@+id/textHigh"
         android:layout_width="wrap_content"
@@ -59,6 +63,6 @@
         android:textColor="@color/textColor"
         app:layout_constraintBottom_toBottomOf="@id/textLow"
         app:layout_constraintEnd_toStartOf="@id/textLow"
-        app:layout_constraintTop_toTopOf="@id/textLow"/>
+        app:layout_constraintTop_toTopOf="@id/textLow" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

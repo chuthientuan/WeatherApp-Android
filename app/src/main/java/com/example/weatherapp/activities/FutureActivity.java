@@ -38,11 +38,15 @@ import java.util.TreeMap;
 public class FutureActivity extends AppCompatActivity {
     private ArrayList<FutureDomain> items;
     private FutureAdapter futureAdapter;
+    private RecyclerView recyclerViewFuture;
 
-    private TextView textFeels, textTemperatureToday, textWeatherToday;
-    private TextView textWind;
-    private TextView textHumidity;
+    private TextView textTemperatureToday, textWeatherToday;
+    private TextView textFeels, textWind, textHumidity;
+    private ImageView imgIcon, imgBack;
 
+    private String nameCity = "";
+
+    @SuppressLint("DiscouragedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,18 +57,13 @@ public class FutureActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        textTemperatureToday = findViewById(R.id.textTemperatureToday);
-        textWeatherToday = findViewById(R.id.textWeatherToday);
-        textHumidity = findViewById(R.id.textHumidity);
-        ImageView imgIcon = findViewById(R.id.imgIcon);
-        RecyclerView recyclerViewFuture = findViewById(R.id.recyclerViewFuture);
+        setMapping();
         recyclerViewFuture.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        ImageView imgBack = findViewById(R.id.imgback);
-        imgBack.setOnClickListener(v -> finish());
-
         items = new ArrayList<>();
         futureAdapter = new FutureAdapter(items);
         recyclerViewFuture.setAdapter(futureAdapter);
+
+        imgBack.setOnClickListener(v -> finish());
 
         Intent intent = getIntent();
         String city = intent.getStringExtra("name");
@@ -74,31 +73,36 @@ public class FutureActivity extends AppCompatActivity {
         textWind.setText(intent.getStringExtra("windSpeed"));
         textHumidity.setText(intent.getStringExtra("humidity"));
         String iconImg = intent.getStringExtra("imgIconWeather");
+
         if (iconImg != null) {
             imgIcon.setImageResource(getResources().getIdentifier(String.valueOf(UpdateUI.getIconID(iconImg)), "drawable", getPackageName()));
         }
-        Log.d("result", "Du lieu truyen qua: " + city);
-        String nameCity = "";
-        if (city.equals("")) {
+        Log.d("result", "Du lieu qua: " + city);
+        if (city.isEmpty()) {
             nameCity = "Hanoi";
             get5DaysData(nameCity);
         } else {
             nameCity = city;
             get5DaysData(nameCity);
         }
-        anhxa();
     }
 
-    private void anhxa() {
+    private void setMapping() {
+        textTemperatureToday = findViewById(R.id.textTemperatureToday);
+        textWeatherToday = findViewById(R.id.textWeatherToday);
         textFeels = findViewById(R.id.textFeels);
         textWind = findViewById(R.id.textWind);
+        textHumidity = findViewById(R.id.textHumidity);
+        imgIcon = findViewById(R.id.imgIcon);
+        recyclerViewFuture = findViewById(R.id.recyclerViewFuture);
+        imgBack = findViewById(R.id.imgback);
     }
 
     private void get5DaysData(String city) {
         URL url = new URL();
-        url.setLinkDaily(city);
+        url.setLink(city);
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url.getLinkDaily(),
+        @SuppressLint("NotifyDataSetChanged") StringRequest stringRequest = new StringRequest(Request.Method.GET, url.getLink(),
                 response -> {
                     try {
                         items.clear();
@@ -111,7 +115,7 @@ public class FutureActivity extends AppCompatActivity {
                             JSONObject jsonObjectList = jsonArray.getJSONObject(i);
                             String day = jsonObjectList.getString("dt");
 
-                            long dt = Long.valueOf(day);
+                            long dt = Long.parseLong(day);
                             Date date = new Date(dt * 1000L);
                             @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE", Locale.ENGLISH);
                             String dateTime = simpleDateFormat.format(date);
@@ -122,10 +126,10 @@ public class FutureActivity extends AppCompatActivity {
                             String maxTemp = jsonObjectMain.getString("temp_max");
                             String minTemp = jsonObjectMain.getString("temp_min");
 
-                            Double a = Double.valueOf(maxTemp);
-                            Double b = Double.valueOf(minTemp);
-                            int max = a.intValue();
-                            int min = b.intValue();
+                            double a = Double.parseDouble(maxTemp);
+                            double b = Double.parseDouble(minTemp);
+                            int max = (int) a;
+                            int min = (int) b;
 
                             JSONArray jsonArrayWeather = jsonObjectList.getJSONArray("weather");
                             JSONObject jsonObjectWeather = jsonArrayWeather.getJSONObject(0);

@@ -26,12 +26,13 @@
                 android:src="@drawable/back" />
 
             <include layout="@layout/layout_weather_card_next" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewFuture"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
-                android:clipToPadding="false"/>
+                android:clipToPadding="false" />
 
         </LinearLayout>
     </ScrollView>

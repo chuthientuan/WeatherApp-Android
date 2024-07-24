@@ -29,6 +29,7 @@
                     android:layout_width="300dp"
                     android:layout_height="45dp"
                     android:layout_marginStart="10dp"
+                    android:layout_weight="0.6"
                     android:background="@drawable/background_search"
                     android:drawableStart="@drawable/ic_search"
                     android:drawablePadding="10dp"
@@ -38,36 +39,36 @@
                     android:includeFontPadding="false"
                     android:inputType="text"
                     android:paddingStart="16dp"
-                    android:layout_weight="0.6"
                     android:textColor="@color/black"
                     tools:ignore="RtlSymmetry" />
+
                 <ImageView
                     android:id="@+id/imgSearch"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/ic_search"
+                    android:layout_weight="0.4"
                     android:contentDescription="@string/app_name"
-                    android:layout_weight="0.4"/>
-
+                    android:src="@drawable/ic_search" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/textNameCity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:gravity="center"
-                android:textAlignment="center"
                 android:layout_marginTop="20dp"
+                android:gravity="center"
                 android:includeFontPadding="false"
-                android:visibility="gone"
-                android:textColor="@color/textColor"/>
+                android:textAlignment="center"
+                android:textColor="@color/textColor"
+                android:textSize="20sp"
+                android:visibility="gone" />
+
             <TextView
                 android:id="@+id/textState"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:includeFontPadding="false"
                 android:layout_marginTop="10dp"
+                android:includeFontPadding="false"
                 android:textAlignment="center"
                 android:textColor="@color/textColor"
                 android:textSize="19sp" />
