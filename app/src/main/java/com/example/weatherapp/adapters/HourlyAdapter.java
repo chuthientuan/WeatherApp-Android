@@ -32,13 +32,13 @@ public class HourlyAdapter extends RecyclerView.Adapter<HourlyAdapter.HourlyView
         return new HourlyViewHolder(view);
     }
 
-    @SuppressLint({"DefaultLocale", "SetTextI18n"})
+    @SuppressLint({"DefaultLocale", "SetTextI18n", "DiscouragedApi"})
     @Override
     public void onBindViewHolder(@NonNull HourlyAdapter.HourlyViewHolder holder, int position) {
         Hourly item = items.get(position);
         context = holder.itemView.getContext();
         holder.textHour.setText(item.getHour());
-        holder.textTemp.setText(item.getTemp()+ "°");
+        holder.textTemp.setText(item.getTemp() + "°");
         int iconResId = UpdateUI.getIconID(item.getPicPath());
         holder.imagePic.setImageResource(context.getResources().getIdentifier(String.valueOf(iconResId), "drawable", context.getPackageName()));
     }
@@ -49,8 +49,10 @@ public class HourlyAdapter extends RecyclerView.Adapter<HourlyAdapter.HourlyView
     }
 
     static class HourlyViewHolder extends RecyclerView.ViewHolder {
-        private TextView textHour, textTemp;
-        private ImageView imagePic;
+        private final TextView textHour;
+        private final TextView textTemp;
+        private final ImageView imagePic;
+
         public HourlyViewHolder(@NonNull View itemView) {
             super(itemView);
             textHour = itemView.findViewById(R.id.textHour);

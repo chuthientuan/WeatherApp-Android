@@ -4,8 +4,7 @@ import com.example.weatherapp.location.LocationCord;
 
 public class URL {
     private String linkDay;
-    private String linkHour;
-    private String linkDaily;
+    private String link;
 
     public URL() {
     }
@@ -18,19 +17,11 @@ public class URL {
         return linkDay;
     }
 
-    public void setLinkHour(String city) {
-        linkHour = "https://api.openweathermap.org/data/2.5/forecast?q=" + city + "&appid=" + LocationCord.API_KEY + "&units=metric";
+    public void setLink(String city) {
+        link = "https://api.openweathermap.org/data/2.5/forecast?q=" + city + "&appid=" + LocationCord.API_KEY + "&units=metric";
     }
 
-    public String getLinkHour() {
-        return linkHour;
-    }
-
-    public void setLinkDaily(String city) {
-        linkDaily = "https://api.openweathermap.org/data/2.5/forecast?q=" + city + "&appid=" + LocationCord.API_KEY + "&units=metric";
-    }
-
-    public String getLinkDaily() {
-        return linkDaily;
+    public String getLink() {
+        return link;
     }
 }

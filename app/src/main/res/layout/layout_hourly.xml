@@ -3,37 +3,41 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="90dp"
     android:layout_height="wrap_content"
-    android:background="@drawable/background_hourly"
     android:layout_margin="8dp"
+    android:background="@drawable/background_hourly"
     android:elevation="3dp">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
         <TextView
             android:id="@+id/textHour"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/_10_00"
             android:layout_margin="8dp"
+            android:text="@string/_10_00"
             android:textAlignment="center"
-            android:textColor="@color/textColor"/>
+            android:textColor="@color/textColor" />
+
         <ImageView
             android:id="@+id/imagePic"
             android:layout_width="45dp"
             android:layout_height="45dp"
-            android:src="@drawable/cloudy_sunny"
             android:layout_gravity="center"
             android:layout_margin="8dp"
-            android:contentDescription="@string/app_name"/>
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/cloudy_sunny" />
+
         <TextView
             android:id="@+id/textTemp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:text="@string/_20"
             android:textAlignment="center"
             android:textColor="@color/textColor"
-            android:textSize="18sp"
-            android:layout_marginBottom="8dp"/>
+            android:textSize="18sp" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

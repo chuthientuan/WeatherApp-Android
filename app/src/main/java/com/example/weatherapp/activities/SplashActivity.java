@@ -1,5 +1,6 @@
 package com.example.weatherapp.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -15,8 +16,8 @@ import com.example.weatherapp.R;
 import java.util.Timer;
 import java.util.TimerTask;
 
+@SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
-    private LottieAnimationView animationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +29,7 @@ public class SplashActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        animationView = findViewById(R.id.animationView);
+        LottieAnimationView animationView = findViewById(R.id.animationView);
         animationView.playAnimation();
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
