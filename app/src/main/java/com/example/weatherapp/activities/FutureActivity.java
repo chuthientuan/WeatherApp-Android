@@ -17,8 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.weatherapp.R;
@@ -34,19 +32,16 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.TreeMap;
 
 public class FutureActivity extends AppCompatActivity {
     private ArrayList<FutureDomain> items;
     private FutureAdapter futureAdapter;
-    private RecyclerView recyclerViewFuture;
 
-    private ImageView imgBack, imgIcon;
-    private String nameCity = "";
-
-    private TextView textTemperatureToday, textWeatherToday, textFeels, textWind, textHumidity;
+    private TextView textFeels, textTemperatureToday, textWeatherToday;
+    private TextView textWind;
+    private TextView textHumidity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,13 +55,11 @@ public class FutureActivity extends AppCompatActivity {
         });
         textTemperatureToday = findViewById(R.id.textTemperatureToday);
         textWeatherToday = findViewById(R.id.textWeatherToday);
-        textFeels = findViewById(R.id.textFeels);
-        textWind = findViewById(R.id.textWind);
         textHumidity = findViewById(R.id.textHumidity);
-        imgIcon = findViewById(R.id.imgIcon);
-        recyclerViewFuture = findViewById(R.id.recyclerViewFuture);
+        ImageView imgIcon = findViewById(R.id.imgIcon);
+        RecyclerView recyclerViewFuture = findViewById(R.id.recyclerViewFuture);
         recyclerViewFuture.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        imgBack = findViewById(R.id.imgback);
+        ImageView imgBack = findViewById(R.id.imgback);
         imgBack.setOnClickListener(v -> finish());
 
         items = new ArrayList<>();
@@ -85,6 +78,7 @@ public class FutureActivity extends AppCompatActivity {
             imgIcon.setImageResource(getResources().getIdentifier(String.valueOf(UpdateUI.getIconID(iconImg)), "drawable", getPackageName()));
         }
         Log.d("result", "Du lieu truyen qua: " + city);
+        String nameCity = "";
         if (city.equals("")) {
             nameCity = "Hanoi";
             get5DaysData(nameCity);
@@ -92,6 +86,12 @@ public class FutureActivity extends AppCompatActivity {
             nameCity = city;
             get5DaysData(nameCity);
         }
+        anhxa();
+    }
+
+    private void anhxa() {
+        textFeels = findViewById(R.id.textFeels);
+        textWind = findViewById(R.id.textWind);
     }
 
     private void get5DaysData(String city) {

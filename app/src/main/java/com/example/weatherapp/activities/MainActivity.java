@@ -32,6 +32,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,16 +41,24 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
     private ArrayList<Hourly> items;
     private HourlyAdapter hourlyAdapter;
-    private RecyclerView recyclerViewHourly;
 
-    private TextView textNext5Days, textNameCity, textDateTime, textState, textTemperature, textPercentHumidity, textWindSpeed, textFeelsLike;
-    private ImageView imgSearch, imgIconWeather;
+    private TextView textNameCity;
+    private TextView textDateTime;
+    private TextView textState;
+    private TextView textTemperature;
+    private TextView textPercentHumidity;
+    private TextView textWindSpeed;
+    private TextView textFeelsLike;
+    private ImageView imgIconWeather;
     private EditText editTextSearch;
     private String nameCity = "";
     private String name, dateTime, status, icon, Temp, humidity, FeelsLike, speed, country;
+    private String hour, iconHourly;
+    private int tempHourly;
 
     private long pressBackTime;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,23 +69,16 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        recyclerViewHourly = findViewById(R.id.recyclerViewHourly);
-        textNext5Days = findViewById(R.id.textNext5Days);
+        RecyclerView recyclerViewHourly = findViewById(R.id.recyclerViewHourly);
+        TextView textNext5Days = findViewById(R.id.textNext5Days);
         recyclerViewHourly.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         items = new ArrayList<>();
-        items.add(new Hourly("9 pm", 28, "cloudy"));
-        items.add(new Hourly("10 pm", 29, "sunny"));
-        items.add(new Hourly("11 am", 30, "wind"));
-        items.add(new Hourly("12 pm", 31, "rainy"));
-        items.add(new Hourly("1 am", 32, "storm"));
         hourlyAdapter = new HourlyAdapter(items);
         recyclerViewHourly.setAdapter(hourlyAdapter);
 
-        textNext5Days.setOnClickListener(v -> {
-            setIntentExtras();
-        });
+        textNext5Days.setOnClickListener(v -> setIntentExtras());
 
-        imgSearch = findViewById(R.id.imgSearch);
+        ImageView imgSearch = findViewById(R.id.imgSearch);
         textDateTime = findViewById(R.id.textDateTime);
         editTextSearch = findViewById(R.id.editTextSearch);
         textState = findViewById(R.id.textState);
@@ -90,18 +92,18 @@ public class MainActivity extends AppCompatActivity {
         textNameCity.setText("Hanoi");
         textNameCity.setVisibility(View.VISIBLE);
         getCurrentWeatherData("Hanoi");
+        getHourlyData("Hanoi");
         imgSearch.setOnClickListener(v -> {
             String city = editTextSearch.getText().toString();
-            if (city.equals("")) {
-                nameCity = "Hanoi";
-                getCurrentWeatherData(nameCity);
-                textNameCity.setText(nameCity);
-                textNameCity.setVisibility(View.VISIBLE);
-            } else {
+            if (city.isEmpty()) {
+                Toast.makeText(this, "Please enter city", Toast.LENGTH_SHORT).show();
+            }
+            else {
                 nameCity = city;
                 textNameCity.setText(nameCity);
                 textNameCity.setVisibility(View.VISIBLE);
                 getCurrentWeatherData(nameCity);
+                getHourlyData(nameCity);
             }
         });
     }
@@ -126,9 +128,10 @@ public class MainActivity extends AppCompatActivity {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url.getLinkDay(),
                 response -> {
                     try {
+                        items.clear();
                         JSONObject jsonObject = new JSONObject(response);
                         String day = jsonObject.getString("dt");
-                        long dt = Long.valueOf(day);
+                        long dt = Long.parseLong(day);
                         Date date = new Date(dt * 1000L);
                         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE yyyy-MM-dd | HH:mm a", Locale.ENGLISH);
                         dateTime = simpleDateFormat.format(date);
@@ -142,8 +145,8 @@ public class MainActivity extends AppCompatActivity {
                         String temp = jsonObjectMain.getString("temp");
                         humidity = jsonObjectMain.getString("humidity");
                         String feelsLike = jsonObjectMain.getString("feels_like");
-                        Double a = Double.valueOf(temp);
-                        Temp = String.valueOf(a.intValue());
+                        double a = Double.parseDouble(temp);
+                        Temp = String.valueOf((int) a);
                         FeelsLike = String.valueOf(Double.valueOf(feelsLike).intValue());
 
                         JSONObject jsonObjectWind = jsonObject.getJSONObject("wind");
@@ -161,7 +164,48 @@ public class MainActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
-    @SuppressLint("SetTextI18n")
+    private void getHourlyData(String city) {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        URL url = new URL();
+        url.setLinkHour(city);
+        @SuppressLint("NotifyDataSetChanged") StringRequest stringRequest = new StringRequest(Request.Method.GET, url.getLinkHour(),
+                response -> {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response);
+                        JSONArray jsonArray = jsonObject.getJSONArray("list");
+                        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+                        SimpleDateFormat outputFormat = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+                        String todayDate = dateFormat.format(new Date());
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject jsonObjectList = jsonArray.getJSONObject(i);
+                            String dt_txt = jsonObjectList.getString("dt_txt");
+                            Date date = inputFormat.parse(dt_txt);
+                            hour = outputFormat.format(date);
+                            String entryDate = dateFormat.format(date);
+
+                            if (entryDate.equals(todayDate)) {
+                                JSONObject jsonObjectMain = jsonObjectList.getJSONObject("main");
+                                String temp = jsonObjectMain.getString("temp");
+                                tempHourly = Double.valueOf(temp).intValue();
+
+                                JSONArray jsonArrayWeather = jsonObjectList.getJSONArray("weather");
+                                JSONObject jsonObjectWeather = jsonArrayWeather.getJSONObject(0);
+                                iconHourly = jsonObjectWeather.getString("icon");
+
+                                items.add(new Hourly(hour, tempHourly, iconHourly));
+                            }
+                        }
+                        hourlyAdapter.notifyDataSetChanged();
+                    } catch (JSONException | ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                },
+                error -> Log.e("result", "JSON parsing error: " + error.getMessage()));
+        requestQueue.add(stringRequest);
+    }
+
+    @SuppressLint({"SetTextI18n", "DiscouragedApi"})
     private void upDateUI() {
         textNameCity.setText(name + "-" + country);
         textDateTime.setText(dateTime);
