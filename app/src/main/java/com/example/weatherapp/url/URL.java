@@ -19,7 +19,7 @@ public class URL {
     }
 
     public void setLinkHour(String city) {
-
+        linkHour = "https://api.openweathermap.org/data/2.5/forecast?q=" + city + "&appid=" + LocationCord.API_KEY + "&units=metric";
     }
 
     public String getLinkHour() {

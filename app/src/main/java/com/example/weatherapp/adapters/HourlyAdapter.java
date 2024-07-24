@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weatherapp.R;
 import com.example.weatherapp.entities.Hourly;
+import com.example.weatherapp.update.UpdateUI;
 
 import java.util.ArrayList;
 
@@ -38,7 +39,8 @@ public class HourlyAdapter extends RecyclerView.Adapter<HourlyAdapter.HourlyView
         context = holder.itemView.getContext();
         holder.textHour.setText(item.getHour());
         holder.textTemp.setText(item.getTemp()+ "°");
-        holder.imagePic.setImageResource(context.getResources().getIdentifier(item.getPicPath(), "drawable", context.getPackageName()));
+        int iconResId = UpdateUI.getIconID(item.getPicPath());
+        holder.imagePic.setImageResource(context.getResources().getIdentifier(String.valueOf(iconResId), "drawable", context.getPackageName()));
     }
 
     @Override
