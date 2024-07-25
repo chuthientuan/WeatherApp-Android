@@ -14,6 +14,11 @@ WeatherApp-Android is an Android application designed to provide weather updates
 - Java SDK
 - Internet connection
 
+## Technologies and APIs
+- **OpenWeatherMap API** - For fetching weather data.
+- **Volley** - For parsing JSON data.
+- **Lottie** - For loading animation
+
 ## Installation
 1. Clone the repository:
     ```sh
@@ -29,6 +34,12 @@ WeatherApp-Android is an Android application designed to provide weather updates
 
 ## Contributing
 Contributions are welcome! Please fork this repository and submit a pull request for any improvements or bug fixes.
+
+## Screenshots
+
+<div >
+<img src="/fastlane/metadata/android/en-US/images/screenshots/1.jpg" width="32%" /> <img src="/fastlane/metadata/android/en-US/images/screenshots/2.jpg" width="32%" />
+</div>
 
 ## License
 This project is licensed under the Apache 2.0 License. See the [LICENSE](LICENSE) file for details.
