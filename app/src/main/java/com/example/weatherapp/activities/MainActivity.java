@@ -25,7 +25,7 @@ import com.example.weatherapp.entities.Hourly;
 import com.example.weatherapp.interfaces.WeatherService;
 import com.example.weatherapp.location.LocationCord;
 import com.example.weatherapp.response.CurrentWeatherResponse;
-import com.example.weatherapp.response.HourlyForecastResponse;
+import com.example.weatherapp.response.ForecastResponse;
 import com.example.weatherapp.retrofit.RetrofitClient;
 import com.example.weatherapp.update.UpdateUI;
 
@@ -48,9 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView imgIconWeather, imgSearch;
     private EditText editTextSearch;
     private String nameCity = "";
-    private String name, dateTime, status, icon, Temp, humidity, FeelsLike, speed, country;
-    private String hour, iconHourly;
-    private int tempHourly;
+    private String icon;
     private long pressBackTime;
     private WeatherService weatherService;
 
@@ -132,8 +130,10 @@ public class MainActivity extends AppCompatActivity {
                                 CurrentWeatherResponse currentWeatherResponse = response.body();
                                 textNameCity.setText(currentWeatherResponse.getName() + "-" + currentWeatherResponse.getSys().getCountry());
                                 textState.setText(currentWeatherResponse.getWeather()[0].getMain());
-//                                double date = currentWeatherResponse.getDateTime();
-//                                textDateTime.setText(new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).format(new Date(String.valueOf(date * 1000))));
+                                double dt = currentWeatherResponse.getDateTime();
+                                Date date = new Date((long) dt * 1000L);
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE yyyy-MM-dd | HH:mm a", Locale.ENGLISH);
+                                textDateTime.setText(dateFormat.format(date));
                                 textTemperature.setText((int) currentWeatherResponse.getMain().getTemp() + "°C");
                                 textPercentHumidity.setText(currentWeatherResponse.getMain().getHumidity() + "%");
                                 textFeelsLike.setText((int) currentWeatherResponse.getMain().getFeelsLike() + "°C");
@@ -155,11 +155,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getHourlyData(String city) {
-        weatherService.getHourlyForecast(city, LocationCord.API_KEY, UNITS)
-                .enqueue(new Callback<HourlyForecastResponse>() {
+        weatherService.getForecast(city, LocationCord.API_KEY, UNITS)
+                .enqueue(new Callback<ForecastResponse>() {
                     @SuppressLint("NotifyDataSetChanged")
                     @Override
-                    public void onResponse(@NonNull Call<HourlyForecastResponse> call, @NonNull Response<HourlyForecastResponse> response) {
+                    public void onResponse(@NonNull Call<ForecastResponse> call, @NonNull Response<ForecastResponse> response) {
                         if (response.isSuccessful() && response.body() != null) {
                             try {
                                 items.clear();
@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
                                 String todayDate = dateFormat.format(new Date());
 
-                                for (HourlyForecastResponse.HourlyForecast forecast : response.body().getList()) {
+                                for (ForecastResponse.HourlyForecast forecast : response.body().getList()) {
                                     String entryDate = dateFormat.format(inputFormat.parse(forecast.getDateTime()));
                                     if (entryDate.equals(todayDate)) {
                                         String hour = outputFormat.format(inputFormat.parse(forecast.getDateTime()));
@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(@NonNull Call<HourlyForecastResponse> call, @NonNull Throwable t) {
+                    public void onFailure(@NonNull Call<ForecastResponse> call, @NonNull Throwable t) {
                         Log.e("API", "Error: " + t.getMessage());
                     }
                 });

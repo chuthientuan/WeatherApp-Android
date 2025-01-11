@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -15,19 +16,14 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.weatherapp.R;
 import com.example.weatherapp.adapters.FutureAdapter;
 import com.example.weatherapp.entities.FutureDomain;
+import com.example.weatherapp.interfaces.WeatherService;
+import com.example.weatherapp.location.LocationCord;
+import com.example.weatherapp.response.ForecastResponse;
+import com.example.weatherapp.retrofit.RetrofitClient;
 import com.example.weatherapp.update.UpdateUI;
-import com.example.weatherapp.url.URL;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,7 +31,12 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TreeMap;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class FutureActivity extends AppCompatActivity {
+    private static final String UNITS = "metric";
     private ArrayList<FutureDomain> items;
     private FutureAdapter futureAdapter;
     private RecyclerView recyclerViewFuture;
@@ -45,6 +46,7 @@ public class FutureActivity extends AppCompatActivity {
     private ImageView imgIcon, imgBack;
 
     private String nameCity = "";
+    private WeatherService weatherService;
 
     @SuppressLint("DiscouragedApi")
     @Override
@@ -52,6 +54,9 @@ public class FutureActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_future);
+
+        weatherService = RetrofitClient.getInstance().create(WeatherService.class);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -99,55 +104,46 @@ public class FutureActivity extends AppCompatActivity {
     }
 
     private void get5DaysData(String city) {
-        URL url = new URL();
-        url.setLink(city);
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        @SuppressLint("NotifyDataSetChanged") StringRequest stringRequest = new StringRequest(Request.Method.GET, url.getLink(),
-                response -> {
-                    try {
-                        items.clear();
+        weatherService.getForecast(city, LocationCord.API_KEY, UNITS)
+                .enqueue(new Callback<ForecastResponse>() {
+                    @SuppressLint("NotifyDataSetChanged")
+                    @Override
+                    public void onResponse(@NonNull Call<ForecastResponse> call, @NonNull Response<ForecastResponse> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            try {
+                                items.clear();
+                                TreeMap<String, FutureDomain> dailyForecasts = new TreeMap<>();
 
-                        // Use a TreeMap to automatically sort the entries by date
-                        TreeMap<String, FutureDomain> dailyForecasts = new TreeMap<>();
-                        JSONObject jsonObject = new JSONObject(response);
-                        JSONArray jsonArray = jsonObject.getJSONArray("list");
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject jsonObjectList = jsonArray.getJSONObject(i);
-                            String day = jsonObjectList.getString("dt");
+                                for (ForecastResponse.HourlyForecast forecast : response.body().getList()) {
+                                    double dt = forecast.getDt();
+                                    Date date = new Date((long) (dt * 1000L));
+                                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE", Locale.ENGLISH);
+                                    String dateTime = simpleDateFormat.format(date);
+                                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+                                    String dateOnly = dateFormat.format(date);
 
-                            long dt = Long.parseLong(day);
-                            Date date = new Date(dt * 1000L);
-                            @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE", Locale.ENGLISH);
-                            String dateTime = simpleDateFormat.format(date);
-                            @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-                            String dateOnly = dateFormat.format(date);
+                                    int temp_min = (int) forecast.getMain().getTempMin();
+                                    int temp_max = (int) forecast.getMain().getTempMax();
 
-                            JSONObject jsonObjectMain = jsonObjectList.getJSONObject("main");
-                            String maxTemp = jsonObjectMain.getString("temp_max");
-                            String minTemp = jsonObjectMain.getString("temp_min");
+                                    String status = forecast.getWeather().get(0).getMain();
+                                    String icon = forecast.getWeather().get(0).getIcon();
 
-                            double a = Double.parseDouble(maxTemp);
-                            double b = Double.parseDouble(minTemp);
-                            int max = (int) a;
-                            int min = (int) b;
-
-                            JSONArray jsonArrayWeather = jsonObjectList.getJSONArray("weather");
-                            JSONObject jsonObjectWeather = jsonArrayWeather.getJSONObject(0);
-                            String status = jsonObjectWeather.getString("description");
-                            String icon = jsonObjectWeather.getString("icon");
-
-                            // Only store the first forecast of each day
-                            if (!dailyForecasts.containsKey(dateOnly)) {
-                                dailyForecasts.put(dateOnly, new FutureDomain(dateTime, icon, status, max, min));
+                                    if (!dailyForecasts.containsKey(dateOnly)) {
+                                        dailyForecasts.put(dateOnly, new FutureDomain(dateTime, icon, status, temp_max, temp_min));
+                                    }
+                                }
+                                items.addAll(dailyForecasts.values());
+                                futureAdapter.notifyDataSetChanged();
+                            } catch (Exception e) {
+                                Log.e("API", "Error parsing JSON: " + e.getMessage());
                             }
                         }
-                        items.addAll(dailyForecasts.values());
-                        futureAdapter.notifyDataSetChanged();
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
                     }
-                },
-                error -> Log.e("result", "JSON parsing error: " + error.getMessage()));
-        requestQueue.add(stringRequest);
+
+                    @Override
+                    public void onFailure(@NonNull Call<ForecastResponse> call, @NonNull Throwable t) {
+                        Log.e("API", "Error: " + t.getMessage());
+                    }
+                });
     }
 }
