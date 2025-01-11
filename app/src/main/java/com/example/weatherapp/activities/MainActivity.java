@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -18,31 +19,30 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.weatherapp.R;
 import com.example.weatherapp.adapters.HourlyAdapter;
 import com.example.weatherapp.entities.Hourly;
+import com.example.weatherapp.interfaces.WeatherService;
+import com.example.weatherapp.location.LocationCord;
+import com.example.weatherapp.response.CurrentWeatherResponse;
+import com.example.weatherapp.response.HourlyForecastResponse;
+import com.example.weatherapp.retrofit.RetrofitClient;
 import com.example.weatherapp.update.UpdateUI;
-import com.example.weatherapp.url.URL;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MainActivity extends AppCompatActivity {
+    private static final String UNITS = "metric";
     private ArrayList<Hourly> items;
     private HourlyAdapter hourlyAdapter;
     private RecyclerView recyclerViewHourly;
-
     private TextView textNameCity, textNext5Days, textDateTime, textState, textTemperature;
     private TextView textPercentHumidity, textWindSpeed, textFeelsLike;
     private ImageView imgIconWeather, imgSearch;
@@ -51,8 +51,8 @@ public class MainActivity extends AppCompatActivity {
     private String name, dateTime, status, icon, Temp, humidity, FeelsLike, speed, country;
     private String hour, iconHourly;
     private int tempHourly;
-
     private long pressBackTime;
+    private WeatherService weatherService;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -60,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        weatherService = RetrofitClient.getInstance().create(WeatherService.class);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -119,99 +122,73 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getCurrentWeatherData(String city) {
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        URL url = new URL();
-        url.setLinkDay(city);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url.getLinkDay(),
-                response -> {
-                    try {
-                        items.clear();
-                        JSONObject jsonObject = new JSONObject(response);
-                        String day = jsonObject.getString("dt");
-                        long dt = Long.parseLong(day);
-                        Date date = new Date(dt * 1000L);
-                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE yyyy-MM-dd | HH:mm a", Locale.ENGLISH);
-                        dateTime = simpleDateFormat.format(date);
-
-                        JSONArray jsonArrayWeather = jsonObject.getJSONArray("weather");
-                        JSONObject jsonObjectWeather = jsonArrayWeather.getJSONObject(0);
-                        status = jsonObjectWeather.getString("main");
-                        icon = jsonObjectWeather.getString("icon");
-
-                        JSONObject jsonObjectMain = jsonObject.getJSONObject("main");
-                        String temp = jsonObjectMain.getString("temp");
-                        humidity = jsonObjectMain.getString("humidity");
-                        String feelsLike = jsonObjectMain.getString("feels_like");
-                        double a = Double.parseDouble(temp);
-                        Temp = String.valueOf((int) a);
-                        FeelsLike = String.valueOf(Double.valueOf(feelsLike).intValue());
-
-                        JSONObject jsonObjectWind = jsonObject.getJSONObject("wind");
-                        speed = jsonObjectWind.getString("speed");
-
-                        JSONObject jsonObjectSys = jsonObject.getJSONObject("sys");
-                        country = jsonObjectSys.getString("country");
-                        name = jsonObject.getString("name");
-                        upDateUI();
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
+        weatherService.getCurrentWeather(city, LocationCord.API_KEY, UNITS)
+                .enqueue(new Callback<CurrentWeatherResponse>() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void onResponse(@NonNull Call<CurrentWeatherResponse> call, @NonNull Response<CurrentWeatherResponse> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            try {
+                                CurrentWeatherResponse currentWeatherResponse = response.body();
+                                textNameCity.setText(currentWeatherResponse.getName() + "-" + currentWeatherResponse.getSys().getCountry());
+                                textState.setText(currentWeatherResponse.getWeather()[0].getMain());
+//                                double date = currentWeatherResponse.getDateTime();
+//                                textDateTime.setText(new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).format(new Date(String.valueOf(date * 1000))));
+                                textTemperature.setText((int) currentWeatherResponse.getMain().getTemp() + "°C");
+                                textPercentHumidity.setText(currentWeatherResponse.getMain().getHumidity() + "%");
+                                textFeelsLike.setText((int) currentWeatherResponse.getMain().getFeelsLike() + "°C");
+                                textWindSpeed.setText((int) currentWeatherResponse.getWind().getSpeed() + "m/s");
+                                icon = currentWeatherResponse.getWeather()[0].getIcon();
+                                imgIconWeather.setImageResource(getResources()
+                                        .getIdentifier(String.valueOf(UpdateUI.getIconID(icon)), "drawable", getPackageName()));
+                            } catch (Exception e) {
+                                Log.e("API", "Error parsing JSON: " + e.getMessage());
+                            }
+                        }
                     }
-                },
-                error -> Log.e("result", "JSON parsing error: " + error.getMessage()));
-        requestQueue.add(stringRequest);
+
+                    @Override
+                    public void onFailure(@NonNull Call<CurrentWeatherResponse> call, @NonNull Throwable t) {
+                        Log.e("API", "Error: " + t.getMessage());
+                    }
+                });
     }
 
     private void getHourlyData(String city) {
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        URL url = new URL();
-        url.setLink(city);
-        @SuppressLint("NotifyDataSetChanged") StringRequest stringRequest = new StringRequest(Request.Method.GET, url.getLink(),
-                response -> {
-                    try {
-                        JSONObject jsonObject = new JSONObject(response);
-                        JSONArray jsonArray = jsonObject.getJSONArray("list");
-                        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
-                        SimpleDateFormat outputFormat = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-                        String todayDate = dateFormat.format(new Date());
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject jsonObjectList = jsonArray.getJSONObject(i);
-                            String dt_txt = jsonObjectList.getString("dt_txt");
-                            Date date = inputFormat.parse(dt_txt);
-                            hour = outputFormat.format(date);
-                            String entryDate = dateFormat.format(date);
+        weatherService.getHourlyForecast(city, LocationCord.API_KEY, UNITS)
+                .enqueue(new Callback<HourlyForecastResponse>() {
+                    @SuppressLint("NotifyDataSetChanged")
+                    @Override
+                    public void onResponse(@NonNull Call<HourlyForecastResponse> call, @NonNull Response<HourlyForecastResponse> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            try {
+                                items.clear();
+                                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+                                SimpleDateFormat outputFormat = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+                                String todayDate = dateFormat.format(new Date());
 
-                            if (entryDate.equals(todayDate)) {
-                                JSONObject jsonObjectMain = jsonObjectList.getJSONObject("main");
-                                String temp = jsonObjectMain.getString("temp");
-                                tempHourly = Double.valueOf(temp).intValue();
-
-                                JSONArray jsonArrayWeather = jsonObjectList.getJSONArray("weather");
-                                JSONObject jsonObjectWeather = jsonArrayWeather.getJSONObject(0);
-                                iconHourly = jsonObjectWeather.getString("icon");
-
-                                items.add(new Hourly(hour, tempHourly, iconHourly));
+                                for (HourlyForecastResponse.HourlyForecast forecast : response.body().getList()) {
+                                    String entryDate = dateFormat.format(inputFormat.parse(forecast.getDateTime()));
+                                    if (entryDate.equals(todayDate)) {
+                                        String hour = outputFormat.format(inputFormat.parse(forecast.getDateTime()));
+                                        int temp = (int) forecast.getMain().getTemp();
+                                        String icon = forecast.getWeather().get(0).getIcon();
+                                        items.add(new Hourly(hour, temp, icon));
+                                    }
+                                }
+                                hourlyAdapter.notifyDataSetChanged();
+                            } catch (Exception e) {
+                                Log.e("API", "Error parsing JSON: " + e.getMessage());
                             }
                         }
-                        hourlyAdapter.notifyDataSetChanged();
-                    } catch (JSONException | ParseException e) {
-                        throw new RuntimeException(e);
                     }
-                },
-                error -> Log.e("result", "JSON parsing error: " + error.getMessage()));
-        requestQueue.add(stringRequest);
-    }
 
-    @SuppressLint({"SetTextI18n", "DiscouragedApi"})
-    private void upDateUI() {
-        textNameCity.setText(name + "-" + country);
-        textDateTime.setText(dateTime);
-        textState.setText(status);
-        textTemperature.setText(Temp + "°C");
-        textPercentHumidity.setText(humidity + "%");
-        textFeelsLike.setText(FeelsLike + "°C");
-        textWindSpeed.setText(speed + "m/s");
-        imgIconWeather.setImageResource(getResources().getIdentifier(String.valueOf(UpdateUI.getIconID(icon)), "drawable", getPackageName()));
+                    @Override
+                    public void onFailure(@NonNull Call<HourlyForecastResponse> call, @NonNull Throwable t) {
+                        Log.e("API", "Error: " + t.getMessage());
+                    }
+                });
     }
 
     @Override
