@@ -16,8 +16,8 @@ WeatherApp-Android is an Android application designed to provide weather updates
 
 ## Technologies and APIs
 - **OpenWeatherMap API** - For fetching weather data.
-- **Volley** - For parsing JSON data.
-- **Lottie** - For loading animation
+- **Retrofit** - For calling API.
+- **Lottie** - For loading animation.
 
 ## Installation
 1. Clone the repository:
