@@ -20,7 +20,6 @@ import com.example.weatherapp.R;
 import com.example.weatherapp.adapters.FutureAdapter;
 import com.example.weatherapp.entities.FutureDomain;
 import com.example.weatherapp.interfaces.WeatherService;
-import com.example.weatherapp.location.LocationCord;
 import com.example.weatherapp.response.ForecastResponse;
 import com.example.weatherapp.retrofit.RetrofitClient;
 import com.example.weatherapp.update.UpdateUI;
@@ -36,6 +35,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class FutureActivity extends AppCompatActivity {
+    public static final String API_KEY = "e5afb6abedc33f32a139cf17a8921af6";
     private static final String UNITS = "metric";
     private ArrayList<FutureDomain> items;
     private FutureAdapter futureAdapter;
@@ -104,7 +104,7 @@ public class FutureActivity extends AppCompatActivity {
     }
 
     private void get5DaysData(String city) {
-        weatherService.getForecast(city, LocationCord.API_KEY, UNITS)
+        weatherService.getForecast(city, API_KEY, UNITS)
                 .enqueue(new Callback<ForecastResponse>() {
                     @SuppressLint("NotifyDataSetChanged")
                     @Override
