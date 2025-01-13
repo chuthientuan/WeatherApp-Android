@@ -23,7 +23,6 @@ import com.example.weatherapp.R;
 import com.example.weatherapp.adapters.HourlyAdapter;
 import com.example.weatherapp.entities.Hourly;
 import com.example.weatherapp.interfaces.WeatherService;
-import com.example.weatherapp.location.LocationCord;
 import com.example.weatherapp.response.CurrentWeatherResponse;
 import com.example.weatherapp.response.ForecastResponse;
 import com.example.weatherapp.retrofit.RetrofitClient;
@@ -39,6 +38,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
+    public static final String API_KEY = "e5afb6abedc33f32a139cf17a8921af6";
     private static final String UNITS = "metric";
     private ArrayList<Hourly> items;
     private HourlyAdapter hourlyAdapter;
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getCurrentWeatherData(String city) {
-        weatherService.getCurrentWeather(city, LocationCord.API_KEY, UNITS)
+        weatherService.getCurrentWeather(city, API_KEY, UNITS)
                 .enqueue(new Callback<CurrentWeatherResponse>() {
                     @SuppressLint("SetTextI18n")
                     @Override
@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getHourlyData(String city) {
-        weatherService.getForecast(city, LocationCord.API_KEY, UNITS)
+        weatherService.getForecast(city, API_KEY, UNITS)
                 .enqueue(new Callback<ForecastResponse>() {
                     @SuppressLint("NotifyDataSetChanged")
                     @Override
